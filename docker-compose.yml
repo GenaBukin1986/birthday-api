@@ -1,31 +1,35 @@
 version: '3.8'
 
 services:
-  # 1. База данных
+  # 1. База данных (Склад)
   postgres:
     image: postgres:15-alpine
     container_name: birthdays_db
     environment:
-      POSTGRES_DB: birthdays
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
-  # 2. Backend
+  # 2. Backend (Кухня)
   backend:
-    build: ./backend              # ← просто и понятно
+    build: ./backend
     container_name: birthdays_backend
     environment:
-      DATABASE_URL: postgresql+psycopg://admin:admin@postgres:5432/birthdays
+      DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env
     depends_on:
       - postgres
     ports:
       - "8000:8000"
 
-  # 3. Frontend
+  # 3. Frontend (Зал)
   frontend:
     build: ./frontend
     container_name: birthdays_frontend
